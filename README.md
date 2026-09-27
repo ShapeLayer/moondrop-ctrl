@@ -10,13 +10,13 @@ Everything model-specific lives in a JSON **device profile** — USB IDs, report
 
 | Model | Profile | Status |
 | --- | --- | --- |
-| MOONDROP CHU II DSP | `chu2-dsp` (built in) | Verified on macOS: read, write with readback, save (commit) with reconnect check. Pregain register reads/writes; audible effect unverified. |
+| MOONDROP CHU II DSP | `chu2-dsp` (built in) | Verified on Windows and macOS |
 | Other Moondrop DSP models | Add one in **Settings → Device profiles** | Likely the same protocol with other USB IDs or band layouts; check with the read-only probe. Please contribute profiles that work (see [Contributing](#contributing)). |
 
 | Platform | HID transport | Status |
 | --- | --- | --- |
-| macOS | IOHIDManager | Hardware-verified |
-| Windows | hidapi | Builds; not yet verified on hardware |
+| Windows | hidapi | CHU II DSP hardware-verified |
+| macOS | IOHIDManager | CHU II DSP hardware-verified |
 | Linux | hidapi (hidraw) | Builds; not yet verified on hardware. For non-root access install a udev rule: [`scripts/linux/70-moondrop-ctrl.rules`](scripts/linux/70-moondrop-ctrl.rules) covers the built-in profiles; `moondrop-ctrl udev-rules` (or Settings → General) prints one covering your own profiles too. |
 | iOS, Android, others | Your app's own USB/HID code through the C ABI callback | See [Integration](#integration-c-abi) |
 
