@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Merged into the app bundle by Tauri. Declares the app's localizations so macOS (menus,
+     dialogs, the webview's navigator.language) uses Korean or Japanese instead of the
+     development region. Keep in sync with LANGUAGES in app/src/i18n.ts. -->
+<plist version="1.0">
+<dict>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>en</string>
+  <key>CFBundleLocalizations</key>
+  <array>
+    <string>ko</string>
+    <string>en</string>
+    <string>ja</string>
+  </array>
+  <key>CFBundleAllowMixedLocalizations</key>
+  <true/>
+</dict>
+</plist>

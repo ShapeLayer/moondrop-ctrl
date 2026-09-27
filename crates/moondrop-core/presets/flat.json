@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../schemas/preset.schema.json",
+  "id": "flat",
+  "title": "Flat (no bands)",
+  "note": "Clears every band. The earphone plays its own tuning with no user EQ on top.",
+  "profiles": [],
+  "eq": {
+    "enabled": true,
+    "bands": []
+  }
+}

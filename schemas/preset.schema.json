@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "moondrop-ctrl preset",
+  "description": "A named EQ. The `eq` object alone (as written by `eq export` or the app's Export) is also accepted wherever an EQ file is read. Values must also fit the target profile's band count, limits and filter codes.",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "eq"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]{1,64}$",
+      "description": "IDs starting with original- are reserved for snapshots."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "note": {
+      "type": "string",
+      "description": "What the preset does and how it was made (listening test, measurement, AI suggestion...)."
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Profile IDs it is meant for; empty = any device it fits."
+    },
+    "eq": {
+      "$ref": "#/$defs/eq"
+    }
+  },
+  "$defs": {
+    "eq": {
+      "type": "object",
+      "required": [
+        "bands"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "false bypasses the custom EQ. Files from 0.2 use \"slot\": 3 (on) / 2 (off) instead."
+        },
+        "bands": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "required": [
+              "frequency_hz",
+              "filter_type"
+            ],
+            "description": "Natural units. Files from 0.2 use gain_tenths_db / q_thousandths instead of gain_db / q; both are read.",
+            "properties": {
+              "gain_db": {
+                "type": "number",
+                "description": "Gain in dB, e.g. -4.5. Ignored by pass and notch filters."
+              },
+              "frequency_hz": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "q": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "e.g. 0.707"
+              },
+              "filter_type": {
+                "enum": [
+                  "peaking",
+                  "low_shelf",
+                  "high_shelf",
+                  "low_pass",
+                  "high_pass",
+                  "band_pass",
+                  "notch"
+                ],
+                "description": "Only types the target profile has filter codes for."
+              },
+              "gain_tenths_db": {
+                "type": "integer",
+                "description": "Legacy (0.2): gain × 10."
+              },
+              "q_thousandths": {
+                "type": "integer",
+                "description": "Legacy (0.2): Q × 1000."
+              },
+              "color": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}$",
+                "description": "Display color only; never sent to the device."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

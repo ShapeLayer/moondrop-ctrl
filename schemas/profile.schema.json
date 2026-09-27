@@ -1,0 +1,524 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "moondrop-ctrl device profile",
+  "description": "How to find a Moondrop DSP device on USB and how its EQ registers are laid out. Byte and ID fields accept \"0x..\" hex strings or plain numbers. The core validates more than this schema can express (no register overlap, registers stay within 0xFF, distinct filter codes, 0 dB unused band within limits).",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "usb",
+    "protocol",
+    "limits"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]{1,64}$",
+      "description": "Stable identifier, e.g. \"chu2-dsp\"."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Model name shown in the app."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Where the register map came from and what is verified."
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "True only after write, readback, commit and reconnect were confirmed on real hardware. Apps ask before writing to unverified profiles."
+    },
+    "usb": {
+      "type": "object",
+      "required": [
+        "vendor_id",
+        "product_id"
+      ],
+      "properties": {
+        "vendor_id": {
+          "$ref": "#/$defs/u16"
+        },
+        "product_id": {
+          "$ref": "#/$defs/u16"
+        },
+        "usage_page": {
+          "$ref": "#/$defs/u16OrNull",
+          "description": "HID usage page of the control interface; set only when several interfaces share the VID/PID."
+        },
+        "usage": {
+          "$ref": "#/$defs/u16OrNull"
+        }
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "description": "Every request is a report of frame.length bytes: report ID in byte 0, the register, command and frame.value_length-byte value at the frame offsets, all other bytes 0. A response repeats the first frame.echo_length bytes and carries the register value at frame.value_offset. Omitted sections take the CHU II DSP's values: [report_id, register, 0, 0, 0, command, 0, v0, v1, v2, v3].",
+      "required": [
+        "report_id",
+        "read_command",
+        "write_command",
+        "bands",
+        "filter_codes",
+        "unused_band"
+      ],
+      "properties": {
+        "report_id": {
+          "$ref": "#/$defs/u8"
+        },
+        "read_command": {
+          "$ref": "#/$defs/u8"
+        },
+        "write_command": {
+          "$ref": "#/$defs/u8"
+        },
+        "commit_command": {
+          "$ref": "#/$defs/u8OrNull",
+          "description": "Saves settings to flash; the device may restart without answering. null if unsupported."
+        },
+        "eq_switch": {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "register",
+                "on",
+                "off"
+              ],
+              "properties": {
+                "register": {
+                  "$ref": "#/$defs/u8"
+                },
+                "read_argument": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/u8"
+                  },
+                  "maxItems": 16,
+                  "description": "Value bytes sent when reading this register (zero-padded to frame.value_length)."
+                },
+                "on": {
+                  "$ref": "#/$defs/u8"
+                },
+                "off": {
+                  "$ref": "#/$defs/u8"
+                }
+              },
+              "description": "Its first value byte holds on or off."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The EQ on/off register; null if the device has none (EQ always on)."
+        },
+        "bands": {
+          "type": "object",
+          "required": [
+            "count",
+            "first_register",
+            "stride"
+          ],
+          "description": "Band i uses the registers_per_band registers starting at first_register + i*stride. Their values, concatenated, are the band's bytes, laid out by band_encoding.",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16
+            },
+            "first_register": {
+              "$ref": "#/$defs/u8"
+            },
+            "stride": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 255
+            },
+            "registers_per_band": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 8,
+              "default": 2
+            }
+          }
+        },
+        "filter_codes": {
+          "type": "object",
+          "required": [
+            "peaking"
+          ],
+          "description": "Device byte for each filter shape; null if the device lacks it.",
+          "properties": {
+            "peaking": {
+              "$ref": "#/$defs/u8"
+            },
+            "low_shelf": {
+              "$ref": "#/$defs/u8OrNull"
+            },
+            "high_shelf": {
+              "$ref": "#/$defs/u8OrNull"
+            },
+            "low_pass": {
+              "$ref": "#/$defs/u8OrNull"
+            },
+            "high_pass": {
+              "$ref": "#/$defs/u8OrNull"
+            },
+            "band_pass": {
+              "$ref": "#/$defs/u8OrNull"
+            },
+            "notch": {
+              "$ref": "#/$defs/u8OrNull"
+            }
+          }
+        },
+        "unused_band": {
+          "$ref": "#/$defs/band",
+          "description": "Written to empty slots; must be a 0 dB peaking or shelf filter, exactly representable in band_encoding. Slots holding exactly this read back as empty."
+        },
+        "pregain_register": {
+          "$ref": "#/$defs/u8OrNull",
+          "description": "Register whose first value byte is a signed pregain in dB (experimental)."
+        },
+        "frame": {
+          "type": "object",
+          "description": "Report layout. Omitted fields take the defaults shown.",
+          "properties": {
+            "length": {
+              "type": "integer",
+              "minimum": 8,
+              "maximum": 64,
+              "default": 11
+            },
+            "register_offset": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "command_offset": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 5
+            },
+            "value_offset": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 7
+            },
+            "echo_length": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 7,
+              "description": "Leading bytes a response must repeat; must cover the register and command bytes but not the value."
+            },
+            "value_length": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16,
+              "default": 4,
+              "description": "Bytes in one register value."
+            }
+          }
+        },
+        "commit_register": {
+          "$ref": "#/$defs/u8",
+          "default": "0x00",
+          "description": "Register byte sent with the commit command."
+        },
+        "band_encoding": {
+          "type": "object",
+          "description": "Where each band value sits in the band's bytes and its unit (wire value = natural value / step). Bytes no field covers are written as 0 and must read back as 0. Defaults: CHU II DSP.",
+          "properties": {
+            "byte_order": {
+              "enum": [
+                "little",
+                "big"
+              ],
+              "default": "little"
+            },
+            "gain": {
+              "type": "object",
+              "required": [
+                "offset",
+                "size"
+              ],
+              "description": "Gain in dB; must be signed.",
+              "properties": {
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4,
+                  "default": 2
+                },
+                "step": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "default": 0.1
+                },
+                "signed": {
+                  "type": "boolean",
+                  "default": true
+                }
+              }
+            },
+            "frequency": {
+              "type": "object",
+              "required": [
+                "offset",
+                "size"
+              ],
+              "description": "Frequency in Hz.",
+              "properties": {
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 2
+                },
+                "size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4,
+                  "default": 2
+                },
+                "step": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "default": 1
+                },
+                "signed": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            },
+            "q": {
+              "type": "object",
+              "required": [
+                "offset",
+                "size"
+              ],
+              "description": "Q.",
+              "properties": {
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 4
+                },
+                "size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4,
+                  "default": 2
+                },
+                "step": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "default": 0.001
+                },
+                "signed": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            },
+            "filter": {
+              "type": "object",
+              "required": [
+                "offset",
+                "size"
+              ],
+              "description": "Filter code (see filter_codes); step is ignored.",
+              "properties": {
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 6
+                },
+                "size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4,
+                  "default": 1
+                },
+                "step": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "default": 1
+                },
+                "signed": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            }
+          }
+        },
+        "timing": {
+          "type": "object",
+          "properties": {
+            "response_timeout_ms": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60000,
+              "default": 1000
+            },
+            "reconnect_timeout_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 120000,
+              "default": 5000,
+              "description": "How long to wait for the device after a commit."
+            }
+          }
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "required": [
+        "gain_db",
+        "frequency_hz",
+        "q"
+      ],
+      "properties": {
+        "gain_db": {
+          "$ref": "#/$defs/range"
+        },
+        "frequency_hz": {
+          "$ref": "#/$defs/range"
+        },
+        "q": {
+          "$ref": "#/$defs/range"
+        }
+      }
+    },
+    "dsp": {
+      "type": "object",
+      "description": "Display model only; never sent to the device.",
+      "properties": {
+        "sample_rate_hz": {
+          "type": "integer",
+          "minimum": 8000,
+          "maximum": 384000,
+          "default": 48000
+        }
+      }
+    }
+  },
+  "$defs": {
+    "hex": {
+      "type": "string",
+      "pattern": "^(0[xX][0-9a-fA-F]+|[0-9]+)$"
+    },
+    "u8": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/hex"
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      ]
+    },
+    "u16": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/hex"
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        }
+      ]
+    },
+    "u8OrNull": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/u8"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "u16OrNull": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/u16"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "range": {
+      "type": "object",
+      "required": [
+        "min",
+        "max"
+      ],
+      "properties": {
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        }
+      }
+    },
+    "band": {
+      "type": "object",
+      "required": [
+        "frequency_hz",
+        "filter_type"
+      ],
+      "description": "Natural units. Files from 0.2 use gain_tenths_db / q_thousandths instead of gain_db / q; both are read.",
+      "properties": {
+        "gain_db": {
+          "type": "number",
+          "description": "Gain in dB, e.g. -4.5. Ignored by pass and notch filters."
+        },
+        "frequency_hz": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "q": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "e.g. 0.707"
+        },
+        "filter_type": {
+          "enum": [
+            "peaking",
+            "low_shelf",
+            "high_shelf",
+            "low_pass",
+            "high_pass",
+            "band_pass",
+            "notch"
+          ]
+        },
+        "gain_tenths_db": {
+          "type": "integer",
+          "description": "Legacy (0.2): gain × 10."
+        },
+        "q_thousandths": {
+          "type": "integer",
+          "description": "Legacy (0.2): Q × 1000."
+        }
+      }
+    }
+  }
+}

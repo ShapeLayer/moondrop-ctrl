@@ -1,0 +1,103 @@
+{
+  "interpretation": "raw read responses; layout unverified",
+  "pid": "0x0113",
+  "records": [
+    {
+      "length": 11,
+      "register": "0x24",
+      "responseHex": "4B24000000520003000000"
+    },
+    {
+      "length": 11,
+      "register": "0x26",
+      "responseHex": "4B260000005200D1FF1900"
+    },
+    {
+      "length": 11,
+      "register": "0x27",
+      "responseHex": "4B2700000052002C010000"
+    },
+    {
+      "length": 11,
+      "register": "0x28",
+      "responseHex": "4B280000005200CEFFC800"
+    },
+    {
+      "length": 11,
+      "register": "0x29",
+      "responseHex": "4B290000005200BC020000"
+    },
+    {
+      "length": 11,
+      "register": "0x2A",
+      "responseHex": "4B2A0000005200E7FF7805"
+    },
+    {
+      "length": 11,
+      "register": "0x2B",
+      "responseHex": "4B2B000000520040060000"
+    },
+    {
+      "length": 11,
+      "register": "0x2C",
+      "responseHex": "4B2C0000005200D0FFAC0D"
+    },
+    {
+      "length": 11,
+      "register": "0x2D",
+      "responseHex": "4B2D0000005200E8030000"
+    },
+    {
+      "length": 11,
+      "register": "0x2E",
+      "responseHex": "4B2E0000005200ECFF2823"
+    },
+    {
+      "length": 11,
+      "register": "0x2F",
+      "responseHex": "4B2F0000005200DC050000"
+    }
+  ],
+  "vid": "0x31B2",
+  "decoded": {
+    "slot": 3,
+    "bands": [
+      {
+        "band": 1,
+        "gainDb": -4.7,
+        "frequencyHz": 25,
+        "q": 0.3,
+        "type": 0
+      },
+      {
+        "band": 2,
+        "gainDb": -5.0,
+        "frequencyHz": 200,
+        "q": 0.7,
+        "type": 0
+      },
+      {
+        "band": 3,
+        "gainDb": -2.5,
+        "frequencyHz": 1400,
+        "q": 1.6,
+        "type": 0
+      },
+      {
+        "band": 4,
+        "gainDb": -4.8,
+        "frequencyHz": 3500,
+        "q": 1.0,
+        "type": 0
+      },
+      {
+        "band": 5,
+        "gainDb": -2.0,
+        "frequencyHz": 9000,
+        "q": 1.5,
+        "type": 0
+      }
+    ],
+    "note": "Decoded per unofficial protocol; original raw responses retained."
+  }
+}

@@ -1,0 +1,6 @@
+# Lets the logged-in user open Moondrop DSP HID interfaces without root (Linux, hidraw).
+# Install:  sudo cp scripts/linux/70-moondrop-ctrl.rules /etc/udev/rules.d/
+#           sudo udevadm control --reload && sudo udevadm trigger
+# This file covers the built-in profiles. After adding profiles for other models, regenerate it
+# for every known vendor ID with:  moondrop-ctrl udev-rules > 70-moondrop-ctrl.rules
+KERNEL=="hidraw*", ATTRS{idVendor}=="31b2", TAG+="uaccess"

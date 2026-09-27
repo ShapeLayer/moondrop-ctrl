@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../schemas/preset.schema.json",
+  "id": "chu2-quiet-18db",
+  "title": "Quiet −18 dB",
+  "note": "Lowers the overall level by about 18 dB while keeping the tonal balance close to stock. Listening-tested on a CHU II DSP; the curve comes from a software biquad model, not a measurement.",
+  "profiles": [
+    "chu2-dsp"
+  ],
+  "eq": {
+    "enabled": true,
+    "bands": [
+      {"gain_db": -12.0, "frequency_hz": 1000, "q": 1.0, "filter_type": "low_shelf", "color": "#f25f4c"},
+      {"gain_db": -12.0, "frequency_hz": 1000, "q": 1.0, "filter_type": "high_shelf", "color": "#e8a317"},
+      {"gain_db": -10.2, "frequency_hz": 29, "q": 0.1, "filter_type": "peaking", "color": "#2fb872"},
+      {"gain_db": -5.3, "frequency_hz": 926, "q": 0.138, "filter_type": "peaking", "color": "#3d8fef"},
+      {"gain_db": -6.7, "frequency_hz": 10234, "q": 0.121, "filter_type": "peaking", "color": "#9b6cf0"}
+    ]
+  }
+}

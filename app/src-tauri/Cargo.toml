@@ -1,0 +1,21 @@
+[package]
+name = "moondrop-app"
+description = "Tauri desktop control panel for Moondrop DSP earphones"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "moondrop-app"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+moondrop-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+sys-locale = "0.3"

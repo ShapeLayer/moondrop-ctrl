@@ -1,0 +1,103 @@
+{
+  "$schema": "../../../schemas/profile.schema.json",
+  "id": "chu2-dsp",
+  "title": "MOONDROP CHU II DSP",
+  "notes": "Register map from the chu2-studio project, confirmed on hardware: 5-band write, readback, commit and reconnect. Pregain register reads and writes, but its audible effect is unverified.",
+  "verified": true,
+  "usb": {
+    "vendor_id": "0x31B2",
+    "product_id": "0x0113"
+  },
+  "protocol": {
+    "report_id": "0x4B",
+    "frame": {
+      "length": 11,
+      "register_offset": 1,
+      "command_offset": 5,
+      "value_offset": 7,
+      "value_length": 4,
+      "echo_length": 7
+    },
+    "read_command": "0x52",
+    "write_command": "0x57",
+    "commit_command": "0x53",
+    "commit_register": "0x00",
+    "eq_switch": {
+      "register": "0x24",
+      "read_argument": [
+        "0x03",
+        "0x00",
+        "0x00",
+        "0x00"
+      ],
+      "on": "0x03",
+      "off": "0x02"
+    },
+    "bands": {
+      "count": 5,
+      "first_register": "0x26",
+      "stride": 2,
+      "registers_per_band": 2
+    },
+    "band_encoding": {
+      "byte_order": "little",
+      "gain": {
+        "offset": 0,
+        "size": 2,
+        "step": 0.1,
+        "signed": true
+      },
+      "frequency": {
+        "offset": 2,
+        "size": 2,
+        "step": 1,
+        "signed": false
+      },
+      "q": {
+        "offset": 4,
+        "size": 2,
+        "step": 0.001,
+        "signed": false
+      },
+      "filter": {
+        "offset": 6,
+        "size": 1,
+        "step": 1,
+        "signed": false
+      }
+    },
+    "filter_codes": {
+      "peaking": "0x00",
+      "low_shelf": "0x03",
+      "high_shelf": "0x04"
+    },
+    "unused_band": {
+      "gain_db": 0,
+      "frequency_hz": 20000,
+      "q": 0.1,
+      "filter_type": "peaking"
+    },
+    "pregain_register": "0x66",
+    "timing": {
+      "response_timeout_ms": 1000,
+      "reconnect_timeout_ms": 5000
+    }
+  },
+  "limits": {
+    "gain_db": {
+      "min": -12.0,
+      "max": 12.0
+    },
+    "frequency_hz": {
+      "min": 20,
+      "max": 20000
+    },
+    "q": {
+      "min": 0.1,
+      "max": 10.0
+    }
+  },
+  "dsp": {
+    "sample_rate_hz": 48000
+  }
+}

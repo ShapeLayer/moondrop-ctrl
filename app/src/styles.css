@@ -1,0 +1,108 @@
+:root {
+  color-scheme: light dark;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Segoe UI", "Noto Sans KR", sans-serif;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+  --bg: #0d0f12;
+  --surface: #15181d;
+  --surface-2: #1c2026;
+  --surface-3: #242931;
+  --border: #2a3038;
+  --border-strong: #3a414c;
+  --text: #eceef1;
+  --muted: #8a93a0;
+  --faint: #5c6470;
+  --grid: rgba(255, 255, 255, 0.05);
+  --grid-strong: rgba(255, 255, 255, 0.12);
+  --curve: #f4f1ea;
+  --accent: #e4b363;
+  --accent-ink: #1b1406;
+  --ok: #52c98b;
+  --warn: #e7a43a;
+  --danger: #ef6a62;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  --tooltip-bg: #f1f2f4;
+  --tooltip-text: #15181d;
+  --tooltip-muted: #5f6773;
+
+  --radius: 10px;
+  --radius-sm: 7px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #eef0f3;
+    --surface: #ffffff;
+    --surface-2: #f6f7f9;
+    --surface-3: #eceef2;
+    --border: #dfe2e8;
+    --border-strong: #c7ccd4;
+    --text: #15181d;
+    --muted: #5f6773;
+    --faint: #9aa1ac;
+    --grid: rgba(0, 0, 0, 0.05);
+    --grid-strong: rgba(0, 0, 0, 0.12);
+    --curve: #1b1e24;
+    --accent: #b9791b;
+    --accent-ink: #ffffff;
+    --shadow: 0 10px 30px rgba(20, 24, 33, 0.12);
+    --tooltip-bg: #1f232a;
+    --tooltip-text: #f1f2f4;
+    --tooltip-muted: #9aa1ac;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.4 var(--font);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+md-app {
+  height: 100%;
+}
+
+/* Shared tooltip (src/tooltip.ts), appended to <body>. */
+.md-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  max-width: 320px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 9px;
+  border-radius: 7px;
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  font: 500 12px/1.35 var(--font);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s ease, visibility 0s linear 0.12s;
+}
+.md-tooltip.visible {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.12s ease;
+}
+.md-tooltip kbd {
+  flex: none;
+  font: 500 11px var(--mono);
+  color: var(--tooltip-muted);
+  white-space: nowrap;
+}

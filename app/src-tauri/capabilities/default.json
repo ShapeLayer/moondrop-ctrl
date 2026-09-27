@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Main window: core events, native menu bar, and open/save/confirm dialogs",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "core:menu:default",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "dialog:allow-ask"
+  ]
+}

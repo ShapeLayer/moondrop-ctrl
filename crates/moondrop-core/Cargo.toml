@@ -1,0 +1,18 @@
+[package]
+name = "moondrop-core"
+description = "Profile-driven control core for Moondrop DSP earphones: register protocol, HID transports, profiles, presets, and safe apply helpers"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+build = "build.rs"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+dirs = "6"
+
+[target.'cfg(any(target_os = "windows", target_os = "linux"))'.dependencies]
+hidapi = { version = "2", default-features = false, features = ["windows-native", "linux-static-hidraw"] }
+
+[build-dependencies]
+cc = "1"
